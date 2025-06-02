@@ -1,0 +1,88 @@
+services:
+  # Laravel Backend
+  app:
+    build:
+      context: ./good-job
+      dockerfile: Dockerfile
+    container_name: good-job-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./good-job:/var/www/html
+      - vendor:/var/www/html/vendor
+      - storage:/var/www/html/storage
+      - bootstrap_cache:/var/www/html/bootstrap/cache
+    networks:
+      - app-network
+    depends_on:
+      - db
+
+  # Nginx for Laravel Backend
+  nginx:
+    image: nginx:alpine
+    container_name: good-job-nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./good-job:/var/www/html
+      - ./good-job/nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - app-network
+    depends_on:
+      - app
+
+  # React Frontend - Talent
+  talent-ui:
+    build:
+      context: ./good-job-talent
+      dockerfile: Dockerfile
+    container_name: good-job-talent-ui
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    volumes:
+      - ./good-job-talent/src:/app/src
+    networks:
+      - app-network
+
+  # React Frontend - Employer
+  employer-ui:
+    build:
+      context: ./good-job-employer
+      dockerfile: Dockerfile
+    container_name: good-job-employer-ui
+    restart: unless-stopped
+    ports:
+      - "3001:80"
+    volumes:
+      - ./good-job-employer/src:/app/src
+    networks:
+      - app-network
+
+  # MySQL Database (Example)
+  db:
+    image: mysql:8.0
+    container_name: good-job-db
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-laravel}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_USER: ${DB_USERNAME:-laravel_user}
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db-data:
+  vendor:
+  storage:
+  bootstrap_cache:

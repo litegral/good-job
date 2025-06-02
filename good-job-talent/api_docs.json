@@ -1,0 +1,333 @@
+{
+    "info": {
+        "_postman_id": "YOUR_UUID_HERE", 
+        "name": "GoodJob API",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": "Collection for testing the GoodJob API"
+    },
+    "item": [
+        {
+            "name": "Auth",
+            "item": [
+                {
+                    "name": "Register Employer",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData && jsonData.token) {",
+                                    "        pm.collectionVariables.set(\"authToken\", jsonData.token);",
+                                    "        console.log(\"Auth token set from employer registration.\");",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {"key": "Accept", "value": "application/json"},
+                            {"key": "Content-Type", "value": "application/json"}
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Test Employer\",\n    \"email\": \"employer@example.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\",\n    \"type\": \"employer\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/register",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "register"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Register Talent",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData && jsonData.token) {",
+                                    "        pm.collectionVariables.set(\"authToken\", jsonData.token);",
+                                    "        console.log(\"Auth token set from talent registration.\");",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {"key": "Accept", "value": "application/json"},
+                            {"key": "Content-Type", "value": "application/json"}
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Test Talent\",\n    \"email\": \"talent@example.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\",\n    \"type\": \"talent\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/register",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "register"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData && jsonData.token) {",
+                                    "        pm.collectionVariables.set(\"authToken\", jsonData.token);",
+                                    "        console.log(\"Auth token set from login.\");",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {"key": "Accept", "value": "application/json"},
+                            {"key": "Content-Type", "value": "application/json"}
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"employer@example.com\",\n    \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/login",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "login"]
+                        },
+                        "description": "Login as employer or talent. Update email/password as needed."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Job Postings",
+            "item": [
+                {
+                    "name": "Create Job Posting (Employer)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData && jsonData.id) {",
+                                    "        pm.collectionVariables.set(\"jobPostingId\", jsonData.id);",
+                                    "        console.log(\"jobPostingId set from create job posting: \" + jsonData.id);",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {"key": "Accept", "value": "application/json"},
+                            {"key": "Content-Type", "value": "application/json"},
+                            {"key": "Authorization", "value": "Bearer {{authToken}}"}
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"title\": \"Software Engineer\",\n    \"description\": \"Develop amazing software.\",\n    \"company_name\": \"Tech Solutions Inc.\",\n    \"location\": \"Remote\",\n    \"salary\": 75000,\n    \"employment_type\": \"Full-time\",\n    \"closes_at\": \"2025-12-31T23:59:59Z\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/job-postings",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "job-postings"]
+                        },
+                        "description": "Requires Employer Auth Token"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "List Job Postings (Public)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {"key": "Accept", "value": "application/json"}
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/job-postings",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "job-postings"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Job Posting Details (Public)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {"key": "Accept", "value": "application/json"}
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/job-postings/{{jobPostingId}}",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "job-postings", "{{jobPostingId}}"]
+                        },
+                        "description": "Uses jobPostingId variable."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Job Applications",
+            "item": [
+                {
+                    "name": "Apply for Job (Talent)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData && jsonData.id) {",
+                                    "        pm.collectionVariables.set(\"jobApplicationId\", jsonData.id);",
+                                    "        console.log(\"jobApplicationId set from apply for job: \" + jsonData.id);",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {"key": "Accept", "value": "application/json"},
+                            {"key": "Authorization", "value": "Bearer {{authToken}}"}
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "resume",
+                                    "type": "file",
+                                    "src": [] 
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/job-postings/{{jobPostingId}}/apply",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "job-postings", "{{jobPostingId}}", "apply"]
+                        },
+                        "description": "Requires Talent Auth Token. Set jobPostingId. Select a PDF for 'resume' in Body -> form-data."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "List Applications for a Job Posting (Employer)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {"key": "Accept", "value": "application/json"},
+                            {"key": "Authorization", "value": "Bearer {{authToken}}"}
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/job-postings/{{jobPostingId}}/applications",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "job-postings", "{{jobPostingId}}", "applications"]
+                        },
+                        "description": "Requires Employer Auth Token (owner of job posting). Set jobPostingId."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Job Application Details (Talent or Employer)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {"key": "Accept", "value": "application/json"},
+                            {"key": "Authorization", "value": "Bearer {{authToken}}"}
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/job-applications/{{jobApplicationId}}",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "job-applications", "{{jobApplicationId}}"]
+                        },
+                        "description": "Requires Talent (applicant) or Employer (owner) Auth Token. Set jobApplicationId."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Job Application Status (Employer)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {"key": "Accept", "value": "application/json"},
+                            {"key": "Content-Type", "value": "application/json"},
+                            {"key": "Authorization", "value": "Bearer {{authToken}}"}
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"status\": \"accepted\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/job-applications/{{jobApplicationId}}",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "job-applications", "{{jobApplicationId}}"]
+                        },
+                        "description": "Requires Employer Auth Token (owner of job posting). Set jobApplicationId. Valid statuses: pending, under review, interviewing, accepted, rejected."
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:8000",
+            "type": "string",
+            "description": "Your API base URL. Change if different (e.g., http://good-job.test, or your production/staging URL)"
+        },
+        {
+            "key": "authToken",
+            "value": "",
+            "type": "string",
+            "description": "Automatically populated from Login/Register. Or set manually."
+        },
+        {
+            "key": "jobPostingId",
+            "value": "",
+            "type": "string",
+            "description": "Automatically populated from Create Job Posting. Or set manually if testing specific posting."
+        },
+        {
+            "key": "jobApplicationId",
+            "value": "",
+            "type": "string",
+            "description": "Automatically populated from Apply for Job. Or set manually if testing specific application."
+        }
+    ]
+}
